@@ -1,5 +1,5 @@
-
-import * as PromClient from 'prom-client';
+// tslint:disable:max-classes-per-file
+import Prometheus from "prom-client";
 
 export enum MetricType {
   Counter,
@@ -8,27 +8,27 @@ export enum MetricType {
   Summary,
 }
 
-export interface MetricTypeConfigurationInterface {
+export interface IMetricTypeConfigurationInterface {
   type: MetricType;
   configuration?: any;
 }
 
-export class MetricTypeCounter implements MetricTypeConfigurationInterface {
+export class MetricTypeCounter implements IMetricTypeConfigurationInterface {
   type: MetricType = MetricType.Counter;
-  configuration: PromClient.CounterConfiguration;
+  configuration: Prometheus.CounterConfiguration;
 }
 
-export class MetricTypeGauge implements MetricTypeConfigurationInterface {
+export class MetricTypeGauge implements IMetricTypeConfigurationInterface {
   type: MetricType = MetricType.Gauge;
-  configuration: PromClient.GaugeConfiguration;
+  configuration: Prometheus.GaugeConfiguration;
 }
 
-export class MetricTypeHistogram implements MetricTypeConfigurationInterface {
+export class MetricTypeHistogram implements IMetricTypeConfigurationInterface {
   type: MetricType = MetricType.Histogram;
-  configuration: PromClient.HistogramConfiguration;
+  configuration: Prometheus.HistogramConfiguration;
 }
 
-export class MetricTypeSummary implements MetricTypeConfigurationInterface {
+export class MetricTypeSummary implements IMetricTypeConfigurationInterface {
   type: MetricType = MetricType.Summary;
-  configuration: PromClient.SummaryConfiguration;
+  configuration: Prometheus.SummaryConfiguration;
 }

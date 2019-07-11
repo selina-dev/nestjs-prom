@@ -1,3 +1,2 @@
-
-export * from './prom.decorators';
-export { getMetricToken } from './prom.utils';
+export * from "./prom.decorators";
+export { getMetricToken } from "./prom.utils";

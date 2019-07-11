@@ -1,19 +1,24 @@
-# dependencies
-/node_modules
-
-# IDE
-/.idea
-/.awcache
-/.vscode
-
-# misc
-npm-debug.log
 .DS_Store
+node_modules
 
-# tests
-/test
-/coverage
-/.nyc_output
+# Build directory
+build
 
-# dist
-dist
+# TypeDoc website
+typedoc
+
+# Log files
+yarn-debug.log*
+yarn-error.log*
+
+# Jest's test coverage files
+coverage
+
+# Environment variables
+*.env
+!test.env
+
+# Editor directories and files
+.idea
+*.iml
+.vscode

@@ -1,34 +1,35 @@
-import { DEFAULT_PROM_REGISTRY } from "./prom.constants";
+import { Provider } from "@nestjs/common";
 import {
   Counter,
   CounterConfiguration,
-  GaugeConfiguration,
   Gauge,
-  HistogramConfiguration,
+  GaugeConfiguration,
   Histogram,
-  SummaryConfiguration,
-  Summary,
+  HistogramConfiguration,
   Registry,
-} from 'prom-client';
-import { Provider } from "@nestjs/common";
+  Summary,
+  SummaryConfiguration,
+} from "prom-client";
 import { getMetricToken, getRegistryName } from "./common/prom.utils";
+import { DEFAULT_PROM_REGISTRY } from "./prom.constants";
 
 export function createPromCounterProvider(
   configuration: CounterConfiguration,
   registryName: string = DEFAULT_PROM_REGISTRY,
 ): Provider {
   return {
-    provide: getMetricToken('Counter', configuration.name),
+    provide: getMetricToken("Counter", configuration.name),
     useFactory: (registry: Registry) => {
       const obj = new Counter({
         ...configuration,
-        registers: [registry]
+        registers: [registry],
       });
       return obj;
     },
     inject: [
-      registryName === DEFAULT_PROM_REGISTRY ?
-        DEFAULT_PROM_REGISTRY : getRegistryName(registryName),
+      registryName === DEFAULT_PROM_REGISTRY
+        ? DEFAULT_PROM_REGISTRY
+        : getRegistryName(registryName),
     ],
   };
 }
@@ -38,17 +39,18 @@ export function createPromGaugeProvider(
   registryName: string = DEFAULT_PROM_REGISTRY,
 ): Provider {
   return {
-    provide: getMetricToken('Gauge', configuration.name),
+    provide: getMetricToken("Gauge", configuration.name),
     useFactory: (registry: Registry) => {
       const obj = new Gauge({
         ...configuration,
-        registers: [registry]
+        registers: [registry],
       });
       return obj;
     },
     inject: [
-      registryName === DEFAULT_PROM_REGISTRY ?
-        DEFAULT_PROM_REGISTRY : getRegistryName(registryName),
+      registryName === DEFAULT_PROM_REGISTRY
+        ? DEFAULT_PROM_REGISTRY
+        : getRegistryName(registryName),
     ],
   };
 }
@@ -58,17 +60,18 @@ export function createPromHistogramProvider(
   registryName: string = DEFAULT_PROM_REGISTRY,
 ): Provider {
   return {
-    provide: getMetricToken('Histogram', configuration.name),
+    provide: getMetricToken("Histogram", configuration.name),
     useFactory: (registry: Registry) => {
       const obj = new Histogram({
         ...configuration,
-        registers: [registry]
+        registers: [registry],
       });
       return obj;
     },
     inject: [
-      registryName === DEFAULT_PROM_REGISTRY ?
-        DEFAULT_PROM_REGISTRY : getRegistryName(registryName),
+      registryName === DEFAULT_PROM_REGISTRY
+        ? DEFAULT_PROM_REGISTRY
+        : getRegistryName(registryName),
     ],
   };
 }
@@ -78,17 +81,18 @@ export function createPromSummaryProvider(
   registryName: string = DEFAULT_PROM_REGISTRY,
 ): Provider {
   return {
-    provide: getMetricToken('Summary', configuration.name),
+    provide: getMetricToken("Summary", configuration.name),
     useFactory: (registry: Registry) => {
       const obj = new Summary({
         ...configuration,
-        registers: [registry]
+        registers: [registry],
       });
       return obj;
     },
     inject: [
-      registryName === DEFAULT_PROM_REGISTRY ?
-        DEFAULT_PROM_REGISTRY : getRegistryName(registryName),
+      registryName === DEFAULT_PROM_REGISTRY
+        ? DEFAULT_PROM_REGISTRY
+        : getRegistryName(registryName),
     ],
   };
 }

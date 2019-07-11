@@ -1,12 +1,14 @@
-import { Get, Controller } from '@nestjs/common';
-import { AppService } from './app.service';
-import { CounterMetric, InjectCounterMetric } from '../../lib';
+import { Controller, Get } from "@nestjs/common";
+
+import { CounterMetric, InjectCounterMetric } from "../../lib";
+import { AppService } from "./app.service";
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    @InjectCounterMetric('index_counter') private readonly _counterMetric: CounterMetric,
+    @InjectCounterMetric("index_counter")
+    private readonly counterMetric: CounterMetric,
   ) {}
 
   @Get()
@@ -14,9 +16,9 @@ export class AppController {
     return this.appService.root();
   }
 
-  @Get('test')
+  @Get("test")
   test(): string {
-    this._counterMetric.inc(1, new Date());
-    return 'test';
+    this.counterMetric.inc(1, new Date());
+    return "test";
   }
 }

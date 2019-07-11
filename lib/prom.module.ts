@@ -1,23 +1,27 @@
-import { Module, DynamicModule, NestModule, MiddlewareConsumer, Inject, RequestMethod } from '@nestjs/common';
-import { PromCoreModule } from './prom-core.module';
-import { PromModuleOptions, MetricType, MetricTypeConfigurationInterface } from './interfaces';
-import { createPromCounterProvider, createPromGaugeProvider, createPromHistogramProvider, createPromSummaryProvider } from './prom.providers';
-import * as client from 'prom-client';
-import { PromController } from './prom.controller';
-import { InboundMiddleware } from './middleware/inbound.middleware';
-import { DEFAULT_PROM_OPTIONS } from './prom.constants';
+import { DynamicModule, Module } from "@nestjs/common";
+import * as client from "prom-client";
+
+import {
+  IMetricTypeConfigurationInterface,
+  IPromModuleOptions,
+  MetricType,
+} from "./interfaces";
+import { PromCoreModule } from "./prom-core.module";
+import { PromController } from "./prom.controller";
+import {
+  createPromCounterProvider,
+  createPromGaugeProvider,
+  createPromHistogramProvider,
+  createPromSummaryProvider,
+} from "./prom.providers";
 
 @Module({})
 export class PromModule {
-
-  static forRoot(
-    options: PromModuleOptions = {},
-  ): DynamicModule {
-
+  static forRoot(options: IPromModuleOptions = {}): DynamicModule {
     const {
       withDefaultController,
       useHttpCounterMiddleware,
-      ...promOptions
+      useHttpMetricsInterceptor,
     } = options;
 
     const moduleForRoot: DynamicModule = {
@@ -30,29 +34,55 @@ export class PromModule {
 
     // default push default controller
     if (withDefaultController !== false) {
-      moduleForRoot.controllers = [...moduleForRoot.controllers, PromController];
+      moduleForRoot.controllers = [
+        ...moduleForRoot.controllers!,
+        PromController,
+      ];
     }
 
     // if want to use the http counter
-    if (useHttpCounterMiddleware) {
-      const inboundProvider = createPromCounterProvider({
-        name: 'http_requests_total',
-        help: 'http_requests_total Number of inbound request',
-        labelNames: ['method']
+    if (useHttpCounterMiddleware || useHttpMetricsInterceptor) {
+      const inboundCounterProvider = createPromCounterProvider({
+        name: "http_requests_total",
+        help: "http_requests_total Number of inbound request",
+        labelNames: ["path", "method", "status"],
       });
 
-      moduleForRoot.providers = [...moduleForRoot.providers , inboundProvider];
-      moduleForRoot.exports = [...moduleForRoot.exports, inboundProvider];
+      moduleForRoot.providers = [
+        ...moduleForRoot.providers!,
+        inboundCounterProvider,
+      ];
+      moduleForRoot.exports = [
+        ...moduleForRoot.exports!,
+        inboundCounterProvider,
+      ];
+    }
+
+    if (useHttpMetricsInterceptor) {
+      const requestDurationGaugeProvider = createPromGaugeProvider({
+        name: "http_requests_duration",
+        help:
+          "http_requests_duration The time(in milliseconds) to process API requests",
+        labelNames: ["path", "method"],
+      });
+
+      moduleForRoot.providers = [
+        ...moduleForRoot.providers!,
+        requestDurationGaugeProvider,
+      ];
+      moduleForRoot.exports = [
+        ...moduleForRoot.exports!,
+        requestDurationGaugeProvider,
+      ];
     }
 
     return moduleForRoot;
   }
 
   static forMetrics(
-    metrics: MetricTypeConfigurationInterface[],
+    metrics: IMetricTypeConfigurationInterface[],
   ): DynamicModule {
-
-    const providers = metrics.map((entry) => {
+    const providers = metrics.map(entry => {
       switch (entry.type) {
         case MetricType.Counter:
           return createPromCounterProvider(entry.configuration);
@@ -69,14 +99,12 @@ export class PromModule {
 
     return {
       module: PromModule,
-      providers: providers,
+      providers,
       exports: providers,
     };
   }
 
-  static forCounter(
-    configuration: client.CounterConfiguration,
-  ): DynamicModule {
+  static forCounter(configuration: client.CounterConfiguration): DynamicModule {
     const provider = createPromCounterProvider(configuration);
     return {
       module: PromModule,
@@ -85,9 +113,7 @@ export class PromModule {
     };
   }
 
-  static forGauge(
-    configuration: client.GaugeConfiguration,
-  ): DynamicModule {
+  static forGauge(configuration: client.GaugeConfiguration): DynamicModule {
     const provider = createPromGaugeProvider(configuration);
     return {
       module: PromModule,
@@ -97,7 +123,7 @@ export class PromModule {
   }
 
   static forHistogram(
-    configuration: client.HistogramConfiguration
+    configuration: client.HistogramConfiguration,
   ): DynamicModule {
     const provider = createPromHistogramProvider(configuration);
     return {
@@ -107,9 +133,7 @@ export class PromModule {
     };
   }
 
-  static forSummary(
-    configuration: client.SummaryConfiguration
-  ): DynamicModule {
+  static forSummary(configuration: client.SummaryConfiguration): DynamicModule {
     const provider = createPromSummaryProvider(configuration);
     return {
       module: PromModule,

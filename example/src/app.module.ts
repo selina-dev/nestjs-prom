@@ -1,38 +1,35 @@
-import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PromModule, MetricType, PromController } from '../../lib';
-import { InboundMiddleware } from '../../lib/middleware/inbound.middleware';
+import { Module } from "@nestjs/common";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+
+import { MetricType, PromModule, RequestMetricsInterceptor } from "../../lib";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
 
 @Module({
   imports: [
     PromModule.forRoot({
       defaultLabels: {
-        app: 'v1.0.0',
+        app: "v1.0.0",
       },
-      useHttpCounterMiddleware: true,
+      useHttpMetricsInterceptor: true,
     }),
     PromModule.forMetrics([
       {
         type: MetricType.Counter,
         configuration: {
-          name: 'index_counter',
-          help: 'index_counter a simple counter',
+          name: "index_counter",
+          help: "index_counter a simple counter",
         },
       },
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestMetricsInterceptor,
+    },
+  ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(InboundMiddleware)
-      .exclude({
-        path: '/metrics',
-        method: RequestMethod.GET,
-      })
-      .forRoutes('*');
-  }
-}
+export class AppModule {}

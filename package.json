@@ -1,47 +1,73 @@
 {
-  "name": "@digikare/nestjs-prom",
-  "version": "0.0.4",
-  "description": "A promotheus module for nestjs",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist && tsc -p tsconfig.json",
-    "precommit": "lint-staged",
-    "prepublish:npm": "npm run build",
-    "publish:npm": "npm publish --access public",
-    "prepublish:next": "npm run build",
-    "publish:next": "npm publish --access public --tag next"
-  },
-  "author": "Tieu-Philippe KHIM <pkhim@digikare.com>",
-  "license": "MIT",
-  "devDependencies": {
-    "@nestjs/common": "^5.3.9",
-    "@nestjs/core": "^5.3.10",
-    "@types/node": "^10.11.3",
-    "prom-client": "^11.1.3",
-    "reflect-metadata": "^0.1.12",
-    "rxjs": "^6.3.3",
-    "ts-node": "^7.0.1",
-    "typescript": "^3.1.1"
-  },
-  "peerDependencies": {
-    "@nestjs/common": "^5.3.9",
-    "@nestjs/core": "^5.3.10",
-    "reflect-metadata": "^0.1.12",
-    "rxjs": "^6.3.3"
-  },
-  "dependencies": {},
+  "name": "@selinarnd/nest-prom",
+  "description": "A Promotheus module for nestjs",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/digikare/nestjs-prom.git"
+    "url": "https://github.com/selina-dev/nest-prom.git"
   },
-  "keywords": [
-    "nestjs",
-    "promotheus"
-  ],
+  "author": {
+    "name": "Elran Kadosh",
+    "email": "elrankadosh@gmail.com"
+  },
   "bugs": {
-    "url": "https://github.com/digikare/nestjs-prom/issues"
+    "url": "https://github.com/selina-dev/nest-prom/issues"
   },
-  "homepage": "https://github.com/digikare/nestjs-prom#readme"
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=10.15.3 <11"
+  },
+  "engineStrict": true,
+  "config": {
+    "engine-strict": true
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:watch": "yarn build -w",
+    "build:typedoc": "typedoc --mode modules --tsconfig tsconfig.build.json --out ./typedoc/",
+    "format": "tslint -p tsconfig.base.json --fix --exclude \"**/node_modules/**\" \"**/*.ts\" && cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" prettier --write \"**/*.{ts,js,json}\"",
+    "lint": "tslint -p tsconfig.base.json -c tslint.json --exclude \"node_modules/**\" \"**/*.ts\"",
+    "clean": "rimraf build coverage typedoc",
+    "test": "jest",
+    "test:watch": "yarn test --watch",
+    "test:cov": "yarn test --coverage",
+    "test:debug": "node --inspect node_modules/jest/bin/jest.js --watch --runInBand",
+    "prepublish": "yarn clean && yarn build"
+  },
+  "dependencies": {
+    "@nestjs/common": "6.2.x",
+    "@nestjs/core": "6.2.x",
+    "express": "^4.17.1",
+    "prom-client": "^11.5.3",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@nestjs/platform-express": "6.3.2",
+    "@nestjs/testing": "6.2.x",
+    "@types/dotenv": "6.1.1",
+    "@types/express": "^4.17.0",
+    "@types/jest": "^24.0.15",
+    "@types/node": "^12.6.2",
+    "@types/supertest": "^2.0.8",
+    "cross-env": "^5.2.0",
+    "dotenv": "^8.0.0",
+    "husky": "^3.0.0",
+    "jest": "^24.8.0",
+    "lint-staged": "^9.1.0",
+    "prettier": "^1.18.2",
+    "rimraf": "^2.6.3",
+    "rxjs": "6.5.2",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.0.2",
+    "ts-loader": "^6.0.4",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typedoc": "^0.14.2",
+    "typescript": "3.5.2"
+  }
 }
