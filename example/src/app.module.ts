@@ -18,7 +18,7 @@ import { AppService } from "./app.service";
         type: MetricType.Counter,
         configuration: {
           name: "index_counter",
-          help: "index_counter a simple counter",
+          help: "A simple counter",
         },
       },
     ]),

@@ -6,5 +6,5 @@ export * from "./prom.controller";
 export * from "./prom.module";
 
 export function getVersion() {
-  return "1.1.0";
+  return "1.1.1";
 }

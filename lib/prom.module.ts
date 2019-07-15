@@ -44,7 +44,7 @@ export class PromModule {
     if (useHttpCounterMiddleware || useHttpMetricsInterceptor) {
       const inboundCounterProvider = createPromCounterProvider({
         name: "http_requests_total",
-        help: "http_requests_total Number of inbound request",
+        help: "Number of inbound requests",
         labelNames: ["path", "method", "status"],
       });
 
