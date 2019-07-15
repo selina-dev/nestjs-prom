@@ -10,14 +10,14 @@ import { Counter, Gauge } from "prom-client";
 import { Observable } from "rxjs";
 import { catchError, finalize, tap } from "rxjs/operators";
 
-import { InjectCounterMetric, InjectGaugeMetric } from "../common";
+import { InjectCounterMetric, InjectHistogramMetric } from "../common";
 
 @Injectable()
 export class RequestMetricsInterceptor implements NestInterceptor {
   constructor(
     @InjectCounterMetric("http_requests_total")
     private readonly counter: Counter,
-    @InjectGaugeMetric("http_requests_duration")
+    @InjectHistogramMetric("http_request_duration_seconds")
     private readonly gauge: Gauge,
   ) {}
 

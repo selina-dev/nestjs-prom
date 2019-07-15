@@ -59,20 +59,20 @@ export class PromModule {
     }
 
     if (useHttpMetricsInterceptor) {
-      const requestDurationGaugeProvider = createPromGaugeProvider({
-        name: "http_requests_duration",
+      const requestDurationHistogramProvider = createPromHistogramProvider({
+        name: "http_request_duration_seconds",
         help:
-          "http_requests_duration The time(in milliseconds) to process API requests",
+          "http_request_duration_seconds The time(in milliseconds) to process API requests",
         labelNames: ["path", "method"],
       });
 
       moduleForRoot.providers = [
         ...moduleForRoot.providers!,
-        requestDurationGaugeProvider,
+        requestDurationHistogramProvider,
       ];
       moduleForRoot.exports = [
         ...moduleForRoot.exports!,
-        requestDurationGaugeProvider,
+        requestDurationHistogramProvider,
       ];
     }
 

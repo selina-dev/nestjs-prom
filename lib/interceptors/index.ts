@@ -1,1 +1,1 @@
-export { RequestMetricsInterceptor } from "./request.interceptor";
+export { RequestMetricsInterceptor } from "./request-metrics.interceptor";
