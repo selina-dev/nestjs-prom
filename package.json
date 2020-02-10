@@ -1,7 +1,7 @@
 {
   "name": "@selinarnd/nest-prom",
   "description": "A Promotheus module for nestjs",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "repository": {
@@ -19,7 +19,7 @@
     "build"
   ],
   "engines": {
-    "node": ">=10.15.3 <11"
+    "node": ">=12.15.0 < 13"
   },
   "engineStrict": true,
   "config": {
