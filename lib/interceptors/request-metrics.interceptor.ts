@@ -22,10 +22,12 @@ export class RequestMetricsInterceptor implements NestInterceptor {
   ) {}
 
   intercept(ctx: ExecutionContext, next: CallHandler): Observable<any> {
-    const request: Request = ctx.switchToHttp().getRequest();
+    if (ctx.getType() !== "http") {
+      return next.handle();
+    }
 
-    const path = request.path;
-    const method = request.method;
+    const request: Request = ctx.switchToHttp().getRequest();
+    const { path, method } = request;
 
     if (path === "/metrics") {
       return next.handle();
@@ -38,7 +40,7 @@ export class RequestMetricsInterceptor implements NestInterceptor {
         const status = request.res!.statusCode.toString();
         this.counter.labels(path, method, status).inc(1, new Date());
       }),
-      catchError(error => {
+      catchError((error) => {
         const status =
           error instanceof HttpException ? error.getStatus().toString() : "500";
 
