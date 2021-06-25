@@ -82,7 +82,7 @@ export class PromModule {
   static forMetrics(
     metrics: IMetricTypeConfigurationInterface[],
   ): DynamicModule {
-    const providers = metrics.map(entry => {
+    const providers = metrics.map((entry) => {
       switch (entry.type) {
         case MetricType.Counter:
           return createPromCounterProvider(entry.configuration);

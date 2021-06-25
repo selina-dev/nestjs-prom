@@ -22,3 +22,5 @@ coverage
 .idea
 *.iml
 .vscode
+
+junit.xml

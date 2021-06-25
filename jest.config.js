@@ -12,7 +12,7 @@ module.exports = {
   notify: true,
   globals: {
     "ts-jest": {
-      tsConfig: "tsconfig.test.json",
+      tsconfig: "tsconfig.test.json",
     },
   },
   reporters: ["default", "jest-junit"],
