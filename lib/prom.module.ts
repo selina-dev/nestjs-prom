@@ -61,8 +61,7 @@ export class PromModule {
     if (useHttpMetricsInterceptor) {
       const requestDurationHistogramProvider = createPromHistogramProvider({
         name: "http_request_duration_seconds",
-        help:
-          "http_request_duration_seconds The time(in milliseconds) to process API requests",
+        help: "http_request_duration_seconds The time(in milliseconds) to process API requests",
         labelNames: ["path", "method"],
       });
 

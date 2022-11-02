@@ -1,0 +1,110 @@
+name: CI Dev
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-session-name: GitHub-Action-Role
+          role-to-assume: ${{ secrets.AWS_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_PACKAGES_REGION }}
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+
+      - run: AWS_DEFAULT_REGION=${{ secrets.AWS_PACKAGES_REGION }} aws codeartifact login --tool npm --repository selinarnd --domain selinarnd --domain-owner ${{ secrets.AWS_PROD_ACCOUNT_ID }}
+      - run: npm config set always-auth true
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        nodejs: [12, 16, 18]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-session-name: GitHub-Action-Role
+          role-to-assume: ${{ secrets.AWS_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_PACKAGES_REGION }}
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.nodejs }}
+          cache: "yarn"
+
+      - run: AWS_DEFAULT_REGION=${{ secrets.AWS_PACKAGES_REGION }} aws codeartifact login --tool npm --repository selinarnd --domain selinarnd --domain-owner ${{ secrets.AWS_PROD_ACCOUNT_ID }}
+      - run: npm config set always-auth true
+      - run: yarn install --frozen-lockfile
+      - run: yarn test
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup git user
+        run: |
+          git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+          git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-session-name: GitHub-Action-Role
+          role-to-assume: ${{ secrets.AWS_ROLE_PROD }}
+          aws-region: ${{ secrets.AWS_PACKAGES_REGION }}
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+
+      - run: AWS_DEFAULT_REGION=${{ secrets.AWS_PACKAGES_REGION }} aws codeartifact login --tool npm --repository selinarnd --domain selinarnd --domain-owner ${{ secrets.AWS_PROD_ACCOUNT_ID }}
+      - run: npm config set always-auth true
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build
+      - run: yarn publish --new-version "0.0.0-next.${GITHUB_SHA::7}" --tag dev
